@@ -195,20 +195,20 @@ def parse_mapfile(mapfile):
     with open(mapfile, 'r') as f:
         for line in f:
 
-            if re.match("^\.text", line):
+            if re.match(r"^\.text", line):
                 cur_type = 't'
                 continue
 
-            if re.match("^\.(bss|stack)", line):
+            if re.match(r"^\.(bss|stack)", line):
                 cur_type = 'b'
                 continue
 
-            if re.match("^\.(relocate|data)", line):
+            if re.match(r"^\.(relocate|data)", line):
                 cur_type = 'd'
                 continue
 
-            # if re.match("^\..+", line):
-            if re.match("^OUTPUT.+", line):
+            # if re.match(r"^\..+", line):
+            if re.match(r"^OUTPUT.+", line):
                 add_sym(res, cur_sym)
                 cur_type = ''
                 # continue
@@ -216,7 +216,7 @@ def parse_mapfile(mapfile):
 
             if cur_type:
                 # fill bytes?
-                m = re.match("^ *\*fill\* +0x([0-9a-f]+) +0x([0-9a-f])+", line)
+                m = re.match(r"^ *\*fill\* +0x([0-9a-f]+) +0x([0-9a-f])+", line)
                 if m:
                     add_sym(res, cur_sym)
                     cur_sym = {
@@ -234,7 +234,7 @@ def parse_mapfile(mapfile):
                     continue
 
                 # start of a new symbol
-                m = re.match(" \.([a-z]+\.)?([-_\.A-Za-z0-9$.]+)", line)
+                m = re.match(r" \.([a-z]+\.)?([-_\.A-Za-z0-9$.]+)", line)
                 if m:
                     # save last symbol
                     add_sym(res, cur_sym)
@@ -253,22 +253,22 @@ def parse_mapfile(mapfile):
                         }
 
                 # get size, addr and path of current symbol
-                m = re.match(".+0x([0-9a-f]+) +0x([0-9a-f]+) (/.+)$", line)
+                m = re.match(r".+0x([0-9a-f]+) +0x([0-9a-f]+) (/.+)$", line)
                 if m:
                     cur_sym['addr'] = int(m.group(1), 16)
                     cur_sym['size'] = int(m.group(2), 16)
                     # get object and archive files
-                    me = re.match(".+/([-_a-zA-Z0-9]+\.a)\(([-_a-zA-Z0-9]+\.o)\)$", m.group(3))
+                    me = re.match(r".+/([-_a-zA-Z0-9]+\.a)\(([-_a-zA-Z0-9]+\.o)\)$", m.group(3))
                     if me:
                         cur_sym['arcv'] = me.group(1)
                         cur_sym['obj'] = me.group(2)
-                    me = re.match(".+/([-_a-zA-Z0-9]+\.o)$", m.group(3))
+                    me = re.match(r".+/([-_a-zA-Z0-9]+\.o)$", m.group(3))
                     if me:
                         cur_sym['arcv'] = ''
                         cur_sym['obj'] = me.group(1)
                     continue
 
-                m = re.match(" +0x[0-9a-f]+ +([-_a-zA-Z0-9]+)$", line)
+                m = re.match(r" +0x[0-9a-f]+ +([-_a-zA-Z0-9]+)$", line)
                 if m:
                     cur_sym['alias'].append(m.group(1))
     return res
