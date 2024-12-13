@@ -191,6 +191,8 @@ def parse_elffile(elffile, prefix, appdir, riot_base=None):
                     d['path'][0] = "app"                
                 else:
                     d['path'].insert(0, "app")
+            if d['path'][0] == "examples":
+                d['path'][0] = "app"
             d['line'] = int(d['line'])
             d['addr'] = int(d['addr'], 16)
             d['type'] = d['type'].lower()
