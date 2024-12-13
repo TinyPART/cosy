@@ -188,7 +188,7 @@ def parse_elffile(elffile, prefix, appdir, riot_base=None):
             d['path'] = d['path'].split(path.sep)
             if d['dir'] == appdir:
                 if d['path'][0] == "":
-                    d['path'][0] = "app"                
+                    d['path'][0] = "app"
                 else:
                     d['path'].insert(0, "app")
             if d['path'][0] == "examples":
