@@ -165,34 +165,24 @@ def parse_elffile(elffile, prefix, appdir, riot_base=None):
                    r"(?P<type>[tbdTDB]) "
                    r"(?P<sym>[0-9a-zA-Z_$.]+)\s+"
                    r"(.*/)?"
-                   r"(?P<dir>"
-                   r"{appdir}|"
+                   r"("
                    r"{riot_base}|"
                    r".cargo/registry/src/[^/]+|"
                    r".cargo/git/checkouts|"
                    r"/rustc/[0-9a-f]+/?/library|"
                    r"ip-over-ble_experiments|"  # HACK...
-                   r"{appdir}/.*bin/pkg"
+                   r"RIOT/app/.*bin/pkg"
                    r")/"
-                   r"((?P<path>.+)/)?"
+                   r"(?P<path>.+)/"
                    r"(?P<file>[0-9a-zA-Z_-]+\.(c|h|rs)):"
-                   r"(?P<line>\d+)$".format(riot_base=riot_base,
-                                            appdir=appdir))
+                   r"(?P<line>\d+)$".format(riot_base=riot_base))
     for line in dump.splitlines():
-        m = c.match(line.decode("utf-8"))
+        line = line.decode("utf-8").replace(appdir, "RIOT/app")
+        m = c.match(line)
         if m:
             d = {'arcv': '', 'obj': '', 'size': -1, 'alias': []}
             d.update(m.groupdict())
-            if d['path'] is None:
-                d['path'] = ""
             d['path'] = d['path'].split(path.sep)
-            if d['dir'] == appdir:
-                if d['path'][0] == "":
-                    d['path'][0] = "app"
-                else:
-                    d['path'].insert(0, "app")
-            if d['path'][0] == "examples":
-                d['path'][0] = "app"
             d['line'] = int(d['line'])
             d['addr'] = int(d['addr'], 16)
             d['type'] = d['type'].lower()
